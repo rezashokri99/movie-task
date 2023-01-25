@@ -1,54 +1,57 @@
 import queryString from "query-string";
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { getAllMovies, getPopularMovies } from "../../helpers/api";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getAllMovies } from "../../helpers/api";
 import styles from "./movieList.module.scss";
 
 const MovieList = () => {
-    let [popularMovies, setPopularMovies] = useState([]);
-    let [loading, setLoading] = useState(true);
-    let [loadingArr, setLoadingArr] = useState([1,1,1,1,1,1,1,1]);
-    
+    let [movies, setMovies] = useState([]);
     let [paginationData, setPaginationData] = useState(true);
+    let [loading, setLoading] = useState(true);
+    let [loadingArr, setLoadingArr] = useState([1, 1, 1, 1, 1, 1, 1, 1]);
 
 
     const navigate = useNavigate();
     const location = useLocation();
-    const parsed = queryString.parse(location.search);
-
-    const { page: currentPage, search } = parsed;
+    const { page: currentPage, search } = queryString.parse(location.search);
 
 
 
     useEffect(() => {
-        const getPopularMoviesFn = async () => {
+        const getMoviesFn = async () => {
             setLoading(true);
-            const { data } = await getAllMovies(search, currentPage)
-            setPopularMovies(data.data);
-            setPaginationData(data.metadata);
+            try {
+                const { data } = await getAllMovies(search, currentPage)
+                setMovies(data.data);
+                setPaginationData(data.metadata);
+                setLoading(false);
+            } catch (error) {
+                setLoading(false);
+            }
+
             setLoading(false);
         }
-        getPopularMoviesFn()
-    }, [currentPage])
+        getMoviesFn()
+    }, [currentPage, search])
 
 
     // function handles the panination click
     const handlePageClick = (data) => {
         const selectedPage = data.selected + 1;
         navigate({
-            search: `page=${selectedPage}`,
+            search: `?search=${search ? search : ""}&page=${selectedPage}`,
         });
+        window.scrollTo(0, 0)
     };
 
     return (
         <div className={styles.movie_list_container}>
 
-            {/* tab content */}
             <div className={styles.movie_list}>
                 {
                     loading ?
-                        loadingArr.map((item, index) => (
+                        loadingArr?.map((item, index) => (
                             <div key={index} className={styles.movie_loader}>
                                 <div className={styles.movie_image_container}>
                                 </div>
@@ -69,32 +72,36 @@ const MovieList = () => {
                                 </div>
                             </div>
                         )) :
-                        popularMovies.map((film) => (
-                            <div key={film.id} className={styles.movie}>
-                                <Link to={`/movies/${film.id}`} className={styles.movie_image_container}>
-                                    <img src={film.poster} className={styles.movie_image} alt={film.title} />
-                                </Link>
-                                <div className={styles.movie_content}>
-                                    <h2 className={styles.title_container}>
-                                        <Link to={`/movies/${film.id}`} className={styles.title}>
-                                            {film.title}
-                                        </Link>
-                                    </h2>
-                                    <div className={styles.movie_footer}>
-                                        <div className={styles.movie_genres}>
-                                            {
-                                                film.genres.map((genre) => (
-                                                    <span key={genre} className={styles.genre}>{genre}</span>
-                                                ))
-                                            }
-                                        </div>
-                                        <div className={styles.year_container}>
-                                            <span className={styles.year}>{film.year}</span>
+                        movies.length ?
+                            movies.map((movie) => (
+                                <div key={movie.id} className={styles.movie}>
+                                    <p to={`/movies/${movie.id}`} className={styles.movie_image_container}>
+                                        <img src={movie.poster} className={styles.movie_image} alt={movie.title} />
+                                    </p>
+                                    <div className={styles.movie_content}>
+                                        <h2 className={styles.title_container}>
+                                            <p to={`/movies/${movie.id}`} className={styles.title}>
+                                                {movie.title}
+                                            </p>
+                                        </h2>
+                                        <div className={styles.movie_footer}>
+                                            <div className={styles.movie_genres}>
+                                                {
+                                                    movie.genres?.map((genre) => (
+                                                        <span key={genre} className={styles.genre}>{genre}</span>
+                                                    ))
+                                                }
+                                            </div>
+                                            <div className={styles.year_container}>
+                                                <span className={styles.year}>{movie.year}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            )) :
+                            <div className={styles.not_found_videos}>
+                                The desired movie was not found.
                             </div>
-                        ))
                 }
 
             </div>

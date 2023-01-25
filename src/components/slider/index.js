@@ -4,57 +4,92 @@ import 'swiper/scss/navigation';
 import 'swiper/scss/pagination';
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Autoplay, EffectFade, Navigation, Pagination } from "swiper";
-import styles from "./slider.module.css";
-
+import styles from "./slider.module.scss";
+import { useEffect, useState } from 'react';
+import { getPopularMovies } from '../../helpers/api';
+import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 
 SwiperCore.use([Navigation, Pagination])
 
 const Slider = () => {
+    let [popularMovies, setPopularMovies] = useState([]);
+    let [loading, setLoading] = useState(true);
+
+
+    useEffect(() => {
+        const getPopularMoviesFn = async () => {
+            setLoading(true);
+            try {
+                const data = await getPopularMovies()
+                setPopularMovies(data);
+                setLoading(false);
+            } catch (error) {
+                setLoading(false);
+            }   
+        }
+        getPopularMoviesFn()
+    }, [])
+
+
+
+
     return (
-        <div>
-            <Swiper
-                className={`${styles.sliderContainer} relative h-[600px] md:h-[750px]`}
-                dir="rtl"
-                loop={true}
-                autoplay={{
-                    delay: 4000,
-                }}
-                effect={"coverflow"}
-                navigation={true}
-                pagination={{
-                    clickable: true,
-                }}
-                modules={[Autoplay, EffectFade, Navigation, Pagination]}
-            >
-                <SwiperSlide className={styles.slideContainer}>
-                    <img className="h-full w-full" src="/assets\images\slider/slider1.jpg" />
-                    <div className={`${styles.descriptionSlide} rtl absolute top-0 right-0 z-10 h-full mt-28 mr-4 sm:mt-40 md:mt-52  md:mr-14 lg:mr-24 text-white`}>
-                        <h2 className="bg-yellow-500 text-slate-333 font-extrabold text-lg py-0.5 px-3.5 w-fit rounded">جدید</h2>
-                        <h1 className="my-[25px] md:my-8 text-7xl font-extrabold mr-10 text-[40px] sm:mr-32 sm:text-[40px] md:mr-16 md:text-[60px] lg:mr-28 lg:text-[65px] 2xl:mr-40 2xl:text-7xl">IRON DOOR</h1>
-                        <div className="mb-9 mr-[90px] sm:mr-[170px] md:mr-[212px] lg:mr-72 2xl:mr-[370px]">
-                            <span className="mr-4 text-[13px] md:text-sm text-white">2021</span>
-                            <span className="mr-4 text-[13px] md:text-sm text-white py-[2px] px-[10px] rounded-3xl border-2 border-red-orginal">+18</span>
-                            <span className="mr-4 text-[13px] md:text-sm text-white">2h 6m</span>
+        <div className={styles.slider_container}>
+
+            {
+                loading ?
+                    <div className={styles.slide_loader}>
+                        <div className={styles.slider_image}></div>
+                        <div className={`${styles.slider_content} `}>
+                            <div className={styles.slider_badge}></div>
+                            <div className={styles.slider_title}></div>
+                            <div className={styles.slider_description}>
+                                <span className={styles.genre}></span>
+                                <span className={styles.genre}></span>
+                            </div>
                         </div>
-                        <p className="my-8 w-[270px] sm:w-[340px] md:w-[400px] lg:w-[450px] 2xl:w-[500px] text-right text-sm">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد...</p>
-                        <div className="flex">
-                            <button className={`${styles.btnHover} py-[10px] px-5 md:px-[30px] bg-red-orginal text-white  flex items-center `}>
-                                <p className="z-10 flex items-center">
-                                    پخش کن
-                                </p>
-                            </button>
-                            <button className={`${styles.btnHover} py-[10px] px-3 md:px-[20px] bg-red-orginal text-white flex items-center mr-4`}>
-                                <p className="z-10 flex items-center">
-                                    لیست من
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 mt-0.5 h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                </p>
-                            </button>
+                        <BsChevronLeft className={styles.chevron_left} />
+                        <BsChevronRight className={styles.chevron_right} />
+                    </div> :
+                    popularMovies.length ?
+                        <Swiper
+                            dir="rtl"
+                            loop={true}
+                            autoplay={{
+                                delay: 4000,
+                            }}
+                            effect={"coverflow"}
+                            navigation={true}
+                            pagination={{
+                                clickable: true,
+                            }}
+                            modules={[Autoplay, EffectFade, Navigation, Pagination]}
+                        >
+                            {
+                                popularMovies.map((movie) => (
+                                    <SwiperSlide key={movie.id} className={styles.slider}>
+                                        <img className={styles.slider_image} src={movie.images[0]} alt={movie.title} />
+                                        <div className={`${styles.slider_content} `}>
+                                            <h2 className={styles.slider_badge}>new</h2>
+                                            <h1 className={styles.slider_title}>{movie.title}</h1>
+                                            <div className={styles.slider_description}>
+                                                {
+                                                    movie.genres?.map((genre) => (
+                                                        <span key={genre} className={styles.genre}>{genre}</span>
+                                                    ))
+                                                }
+                                            </div>
+                                            {/* <p className="my-8 w-[270px] sm:w-[340px] md:w-[400px] lg:w-[450px] 2xl:w-[500px] text-right text-sm">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد...</p> */}
+                                        </div>
+                                    </SwiperSlide>
+                                ))
+                            }
+                        </Swiper> :
+                        <div className={styles.not_found_videos}>
+                            There is no popular movie.
                         </div>
-                    </div>
-                </SwiperSlide>
-            </Swiper>
+            }
+
         </div>
     );
 }

@@ -5,34 +5,22 @@
 .movie_list_container {
     padding: 50px 0;
 
-    @include query(1024px) {
-        padding: 0 80px;
-    }
-
-    @include query(768px) {
-        padding: 0 40px;
-    }
-
 
 
     .movie_list {
-
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         row-gap: 35px;
         column-gap: 12px;
         color: white;
-        padding: 0 7px;
 
 
         @include query(768px) {
-            padding: 0 40px;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             column-gap: 25px;
         }
 
         @include query(1280px) {
-            padding: 0 80px;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             column-gap: 25px;
         }
@@ -157,10 +145,25 @@
                 }
             }
 
+        
 
         }
 
+        .not_found_videos {
+            text-align: center;
+            font-size: 18px;
+            grid-column: span 2 / span 2;
 
+            @include query(768px) {
+                grid-column: span 3 / span 3;
+                font-size: 20px;
+            }
+
+            @include query(1280px) {
+                grid-column: span 4 / span 4;
+                font-size: 22px;
+            }
+        }
 
 
         .movie_loader {
@@ -255,17 +258,16 @@
                 from {
                     background-color: #b6babe;
                 }
-            
+
                 to {
                     background-color: #9b9fa7;
                 }
             }
 
 
-        
+
         }
 
     }
 
 }
-

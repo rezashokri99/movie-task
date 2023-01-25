@@ -1,6 +1,19 @@
+@import "./variables";
+@import "./mixins";
+
 .container {
   max-width: 1536px;
   margin: 0 auto;
+  padding: 0 8px;
+
+  @include query(768px) {
+    padding: 0 40px;
+  }
+
+  @include query(1024px) {
+    padding: 0 80px;
+  }
+
 }
 
 
@@ -11,7 +24,7 @@
   color: white;
   align-items: center;
   justify-content: center;
-  margin: 70px 0;
+  margin: 40px 0 50px;
   display: flex;
   flex-wrap: wrap;
   row-gap: 25px;

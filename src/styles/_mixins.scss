@@ -3,3 +3,35 @@
         @content;
     }
 }
+
+@keyframes loader {
+    from {
+        background-color: #b6babe;
+    }
+
+    to {
+        background-color: #9b9fa7;
+    }
+}
+
+
+@keyframes chevron-loader {
+    from {
+        color: #b6babe;
+    }
+
+    to {
+        color: #9b9fa7;
+    }
+}
+
+
+@keyframes loader-parent {
+    from {
+        background-color: #616366;
+    }
+
+    to {
+        background-color: #505255;
+    }
+}
