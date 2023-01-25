@@ -1,0 +1,36 @@
+.container {
+  max-width: 1536px;
+  margin: 0 auto;
+}
+
+
+/* react pagination styles */
+.pagination {
+  list-style: none;
+  display: flex;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  margin: 70px 0;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 25px;
+
+
+  .page-item a {
+    margin: 0 5px;
+    border: 1px solid gray;
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #45556b;
+    }
+  }
+
+
+  .page-item.active a {
+    background-color: #334155;
+  }
+}
